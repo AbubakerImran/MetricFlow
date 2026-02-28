@@ -173,9 +173,9 @@ MetricFlow provides a REST API for programmatic access to your metrics and event
 
 ### Authentication
 
-API requests require an API key in the `Authorization` header:
+API requests require an API key in the `x-api-key` header:
 ```bash
-Authorization: Bearer YOUR_API_KEY
+x-api-key: YOUR_API_KEY
 ```
 
 ### Endpoints
@@ -184,6 +184,7 @@ Authorization: Bearer YOUR_API_KEY
 ```bash
 POST /api/v1/events
 Content-Type: application/json
+x-api-key: YOUR_API_KEY
 
 {
   "projectId": "project-id",
@@ -202,6 +203,7 @@ Content-Type: application/json
 ```bash
 POST /api/v1/metrics
 Content-Type: application/json
+x-api-key: YOUR_API_KEY
 
 {
   "projectId": "project-id",
@@ -212,9 +214,22 @@ Content-Type: application/json
 }
 ```
 
-#### Get Project Analytics
+#### Get Projects
 ```bash
-GET /api/v1/analytics?projectId={id}&startDate={date}&endDate={date}
+GET /api/v1/projects
+x-api-key: YOUR_API_KEY
+```
+
+#### Get Events
+```bash
+GET /api/v1/events?page=1&limit=50
+x-api-key: YOUR_API_KEY
+```
+
+#### Get Metrics
+```bash
+GET /api/v1/metrics
+x-api-key: YOUR_API_KEY
 ```
 
 For full API documentation, visit `/docs` after starting the development server.
