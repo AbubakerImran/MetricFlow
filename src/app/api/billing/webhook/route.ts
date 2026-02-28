@@ -25,8 +25,10 @@ export async function POST(req: Request) {
         const orgId = session.metadata?.organizationId;
         if (orgId && session.subscription) {
           const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
-          const priceId = subscription.items.data[0]?.price.id;
-          const periodEnd = subscription.items.data[0]?.current_period_end;
+          const subscriptionItem = subscription.items.data[0];
+          if (!subscriptionItem) break;
+          const priceId = subscriptionItem.price.id;
+          const periodEnd = subscriptionItem.current_period_end;
           const plan = priceId === process.env.STRIPE_ENTERPRISE_PRICE_ID ? "ENTERPRISE" : "PRO";
 
           await prisma.organization.update({
@@ -49,8 +51,10 @@ export async function POST(req: Request) {
           where: { stripeSubscriptionId: subscription.id },
         });
         if (org) {
-          const priceId = subscription.items.data[0]?.price.id;
-          const periodEnd = subscription.items.data[0]?.current_period_end;
+          const subscriptionItem = subscription.items.data[0];
+          if (!subscriptionItem) break;
+          const priceId = subscriptionItem.price.id;
+          const periodEnd = subscriptionItem.current_period_end;
           const plan = priceId === process.env.STRIPE_ENTERPRISE_PRICE_ID ? "ENTERPRISE" : "PRO";
           await prisma.organization.update({
             where: { id: org.id },

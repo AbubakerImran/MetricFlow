@@ -16,7 +16,7 @@ export async function GET() {
       take: 10000,
     });
 
-    const csv = Papa.unparse(events.map(e => ({
+    const csv = Papa.unparse(events.map((e: { id: string; name: string; type: string; revenue: number | null; country: string | null; device: string | null; browser: string | null; referrer: string | null; timestamp: Date }) => ({
       id: e.id,
       name: e.name,
       type: e.type,

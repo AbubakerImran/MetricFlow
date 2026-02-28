@@ -39,6 +39,7 @@ export async function POST(req: Request) {
     const inviteToken = crypto.randomUUID();
 
     const org = await prisma.organization.findUnique({ where: { id: session.user.organizationId } });
+    if (!org) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
 
     const member = await prisma.organizationMember.create({
       data: {
@@ -51,11 +52,11 @@ export async function POST(req: Request) {
       },
     });
 
-    await sendTeamInviteEmail(email, inviteToken, org?.name || "MetricFlow");
+    await sendTeamInviteEmail(email, inviteToken, org.name || "MetricFlow");
 
     return NextResponse.json({ success: true, data: member });
   } catch (error) {
-    if (error instanceof z.ZodError) return NextResponse.json({ error: error.issues[0].message }, { status: 400 });
+    if (error instanceof z.ZodError) return NextResponse.json({ error: error.issues[0]?.message || "Validation failed" }, { status: 400 });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
