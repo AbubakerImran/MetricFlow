@@ -257,7 +257,7 @@ For interactive API documentation with example responses, visit `/docs` after st
 | Projects | 1 | 10 | Unlimited |
 | Events/month | 1,000 | 100,000 | Unlimited |
 | Team members | 1 | 10 | Unlimited |
-| Data retention | 7 days | 1 year | 2 years |
+| Data retention | 7 days | 1 year | Unlimited |
 | API access | — | ✓ | ✓ |
 | CSV/PDF export | — | ✓ | ✓ |
 
