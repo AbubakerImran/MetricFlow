@@ -33,7 +33,7 @@ export async function GET() {
     doc.text("Date", 180, y);
     y += 6;
 
-    events.forEach((event) => {
+    events.forEach((event: { name: string; type: string; revenue: number | null; country: string | null; timestamp: Date }) => {
       if (y > 280) {
         doc.addPage();
         y = 20;

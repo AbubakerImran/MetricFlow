@@ -29,7 +29,10 @@ export async function PUT(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { ids } = await req.json();
+    const body = await req.json();
+    const ids = Array.isArray(body?.ids) ? body.ids : [];
+
+    if (ids.length === 0) return NextResponse.json({ error: "No notification IDs provided" }, { status: 400 });
 
     await prisma.notification.updateMany({
       where: { id: { in: ids }, userId: session.user.id },

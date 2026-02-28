@@ -132,7 +132,7 @@ export default function TeamPage() {
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">
                       <AvatarFallback className="bg-indigo-500/10 text-indigo-500 text-xs">
-                        {member.name ? member.name.split(" ").map(n => n[0]).join("") : member.email[0].toUpperCase()}
+                        {member.name ? member.name.split(" ").filter(Boolean).map(n => n[0]).join("") : member.email?.charAt(0)?.toUpperCase() || "?"}
                       </AvatarFallback>
                     </Avatar>
                     <div>
