@@ -116,15 +116,10 @@
 
 4. **Set up the database**
    
-   Generate Prisma client and run migrations:
+   Generate Prisma client and push the schema to your database:
    ```bash
    npx prisma generate
    npx prisma db push
-   ```
-
-   (Optional) Seed the database:
-   ```bash
-   npx prisma db seed
    ```
 
 5. **Run the development server**
