@@ -16,7 +16,7 @@ export async function GET() {
       take: 10000,
     });
 
-    const csv = Papa.unparse(events.map(e => ({
+    const csv = Papa.unparse(events.map((e: typeof events[0]) => ({
       id: e.id,
       name: e.name,
       type: e.type,
