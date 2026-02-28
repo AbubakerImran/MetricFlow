@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import Papa from "papaparse";
+
+type Event = Prisma.EventGetPayload<object>;
 
 export async function GET() {
   try {
@@ -16,7 +19,7 @@ export async function GET() {
       take: 10000,
     });
 
-    const csv = Papa.unparse(events.map((e: typeof events[0]) => ({
+    const csv = Papa.unparse(events.map((e: Event) => ({
       id: e.id,
       name: e.name,
       type: e.type,
