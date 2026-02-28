@@ -6,7 +6,7 @@ const endpoints = [
     path: "/api/v1/events",
     description: "Track a new event. Send event data from your application to MetricFlow for real-time processing and analytics.",
     curl: `curl -X POST https://api.metricflow.io/api/v1/events \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
     "name": "page_view",
@@ -33,7 +33,7 @@ const endpoints = [
     path: "/api/v1/events",
     description: "Retrieve a list of tracked events. Supports filtering by name, date range, and pagination.",
     curl: `curl https://api.metricflow.io/api/v1/events?name=page_view&limit=10 \\
-  -H "Authorization: Bearer YOUR_API_KEY"`,
+  -H "x-api-key: YOUR_API_KEY"`,
     response: `{
   "data": [
     {
@@ -56,7 +56,7 @@ const endpoints = [
     path: "/api/v1/metrics",
     description: "Retrieve aggregated metrics for your project. Includes revenue, user counts, session data, and custom metrics.",
     curl: `curl https://api.metricflow.io/api/v1/metrics?period=30d \\
-  -H "Authorization: Bearer YOUR_API_KEY"`,
+  -H "x-api-key: YOUR_API_KEY"`,
     response: `{
   "period": "30d",
   "metrics": {
@@ -77,7 +77,7 @@ const endpoints = [
     path: "/api/v1/projects",
     description: "List all projects associated with your account. Each project has its own set of events, metrics, and team members.",
     curl: `curl https://api.metricflow.io/api/v1/projects \\
-  -H "Authorization: Bearer YOUR_API_KEY"`,
+  -H "x-api-key: YOUR_API_KEY"`,
     response: `{
   "data": [
     {
@@ -141,7 +141,7 @@ export default function DocsPage() {
             <section id="getting-started">
               <h2 className="text-2xl font-bold mb-4">Getting Started</h2>
               <p className="text-muted-foreground mb-4">
-                The MetricFlow API allows you to programmatically track events, retrieve metrics, and manage projects. All API requests require authentication via a Bearer token.
+                The MetricFlow API allows you to programmatically track events, retrieve metrics, and manage projects. All API requests require authentication via an API key.
               </p>
               <div className="rounded-lg bg-zinc-900 p-4 text-sm text-zinc-100 overflow-x-auto">
                 <code>Base URL: https://api.metricflow.io</code>
@@ -152,10 +152,10 @@ export default function DocsPage() {
             <section id="authentication">
               <h2 className="text-2xl font-bold mb-4">Authentication</h2>
               <p className="text-muted-foreground mb-4">
-                All API requests must include an <code className="rounded bg-muted px-1.5 py-0.5 text-sm font-mono">Authorization</code> header with your API key. You can generate API keys from your project settings.
+                All API requests must include an <code className="rounded bg-muted px-1.5 py-0.5 text-sm font-mono">x-api-key</code> header with your API key. You can generate API keys from your project settings.
               </p>
               <div className="rounded-lg bg-zinc-900 p-4 text-sm text-zinc-100 overflow-x-auto">
-                <pre><code>{`Authorization: Bearer YOUR_API_KEY`}</code></pre>
+                <pre><code>{`x-api-key: YOUR_API_KEY`}</code></pre>
               </div>
               <p className="mt-4 text-sm text-muted-foreground">
                 Keep your API keys secure. Do not expose them in client-side code. Use environment variables to store keys in your application.

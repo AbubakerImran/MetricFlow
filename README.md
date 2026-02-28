@@ -13,44 +13,46 @@
 
 ### ✨ Key Features
 
-- **📊 Real-Time Analytics**: Track your metrics as they happen with live-updating dashboards and instant insights
-- **👥 Team Collaboration**: Invite team members with role-based access control (Admin, Editor, Viewer)
-- **📈 Custom Dashboards**: Build beautiful dashboards with customizable charts and widgets
-- **💾 Data Export**: Export your data to CSV or PDF with one click
-- **🔌 REST API**: Full REST API with authentication for tracking events from any platform
-- **💳 Stripe Integration**: Seamless subscription management with multiple pricing tiers
-- **🔐 Authentication**: Secure auth with NextAuth.js supporting multiple providers (Google, GitHub, email/password)
-- **🎯 Event Tracking**: Track custom events with properties, revenue, and user metadata
-- **🔑 API Key Management**: Generate and manage API keys for programmatic access
-- **📨 Email Notifications**: Automated email notifications using Resend
-- **🌍 Multi-Organization**: Support for multiple organizations with team member management
-- **🎨 Modern UI**: Built with Tailwind CSS, Radix UI, and shadcn/ui components
-- **🌓 Dark Mode**: Full dark mode support with theme switching
+- **📊 Real-Time Analytics** — Live-updating dashboards with Server-Sent Events (SSE) streaming data every 3 seconds
+- **👥 Team Collaboration** — Invite team members with role-based access control (Admin, Editor, Viewer)
+- **📈 Interactive Dashboards** — KPI cards, 8 chart types powered by Recharts, and customizable views
+- **💾 Data Export** — Export events to CSV or PDF with one click
+- **🔌 REST API** — Public API (`/api/v1`) with `x-api-key` authentication and rate limiting
+- **💳 Stripe Billing** — Subscription management with Free, Pro, and Enterprise tiers via Checkout Sessions and Customer Portal
+- **🔐 Multi-Provider Auth** — NextAuth.js with Google, GitHub, and email/password (bcryptjs) providers
+- **🎯 Event Tracking** — Track page views, sign-ups, purchases, clicks, and custom events with metadata
+- **🔑 API Key Management** — Generate, revoke, and manage API keys from the dashboard
+- **📨 Transactional Email** — Verification, password reset, and team invite emails via Resend
+- **🌍 Multi-Organization** — Multiple organizations with per-org projects, team members, and billing
+- **🎨 Modern UI** — Tailwind CSS, Radix UI, and shadcn/ui components with dark mode support
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Framework**: [Next.js 15](https://nextjs.org/) with App Router
-- **Language**: TypeScript
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Language**: TypeScript (strict mode)
 - **Styling**: Tailwind CSS
 - **UI Components**: Radix UI + shadcn/ui
 - **Charts**: Recharts
 - **Forms**: React Hook Form + Zod validation
 - **State Management**: Zustand
 - **Icons**: Lucide React
+- **Theming**: next-themes (dark mode)
+- **Toasts**: Sonner
 
 ### Backend
+- **Runtime**: Node.js 20+
 - **Database**: PostgreSQL
-- **ORM**: Prisma 7
-- **Authentication**: NextAuth.js
+- **ORM**: Prisma 7 (with `@prisma/adapter-pg` driver adapter)
+- **Authentication**: NextAuth.js v4
 - **Email**: Resend
-- **Payments**: Stripe
-- **File Generation**: jsPDF, PapaParse
+- **Payments**: Stripe (Checkout, Portal, Webhooks)
+- **Exports**: jsPDF (PDF), PapaParse (CSV)
 
-### Development Tools
-- **Linting**: ESLint
+### Development
+- **Linting**: ESLint + eslint-config-next
 - **Package Manager**: npm
 
 ---
@@ -79,7 +81,7 @@
    ```
 
 3. **Set up environment variables**
-   
+
    Copy the example environment file:
    ```bash
    cp .env.example .env
@@ -115,16 +117,11 @@
    ```
 
 4. **Set up the database**
-   
-   Generate Prisma client and run migrations:
+
+   Generate the Prisma client and push the schema:
    ```bash
    npx prisma generate
    npx prisma db push
-   ```
-
-   (Optional) Seed the database:
-   ```bash
-   npx prisma db seed
    ```
 
 5. **Run the development server**
@@ -133,7 +130,7 @@
    ```
 
 6. **Open your browser**
-   
+
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ---
@@ -143,108 +140,126 @@
 ```
 MetricFlow/
 ├── prisma/
-│   └── schema.prisma          # Database schema
+│   └── schema.prisma              # Database schema (13 models, 5 enums)
 ├── src/
-│   ├── app/                   # Next.js App Router
-│   │   ├── (dashboard)/       # Dashboard pages
-│   │   ├── (marketing)/       # Marketing pages
-│   │   ├── api/               # API routes
-│   │   ├── auth/              # Authentication pages
-│   │   └── onboarding/        # Onboarding flow
+│   ├── app/
+│   │   ├── (dashboard)/
+│   │   │   └── dashboard/         # Dashboard, Analytics, Projects, Team,
+│   │   │                          #   Activity, Settings, API Keys
+│   │   ├── (marketing)/           # Landing page, Pricing, API Docs
+│   │   ├── api/
+│   │   │   ├── auth/              # NextAuth, register, verify, password reset
+│   │   │   ├── billing/           # Stripe checkout, portal, webhooks
+│   │   │   ├── events/            # CRUD + CSV/PDF export
+│   │   │   ├── v1/               # Public API (events, metrics, projects)
+│   │   │   ├── sse/              # Server-Sent Events for real-time updates
+│   │   │   └── ...               # Organizations, team, settings, etc.
+│   │   ├── auth/                  # Sign in, sign up, verify, password reset
+│   │   ├── invite/[token]/        # Team invite acceptance
+│   │   └── onboarding/            # New user onboarding wizard
 │   ├── components/
-│   │   ├── dashboard/         # Dashboard components
-│   │   ├── layout/            # Layout components
-│   │   ├── marketing/         # Marketing components
-│   │   ├── shared/            # Shared components
-│   │   └── ui/                # UI primitives (shadcn/ui)
-│   ├── lib/                   # Utility functions
-│   ├── store/                 # Zustand stores
-│   └── types/                 # TypeScript types
-├── .env.example               # Environment variables template
-├── package.json               # Dependencies
-└── tsconfig.json              # TypeScript config
+│   │   ├── dashboard/             # KPI cards, charts
+│   │   ├── layout/                # Sidebar, header
+│   │   ├── marketing/             # Hero, pricing, navbar, footer
+│   │   ├── providers/             # Auth & theme providers
+│   │   ├── shared/                # Logo, shared components
+│   │   └── ui/                    # shadcn/ui primitives (25+ components)
+│   ├── lib/                       # prisma, auth, stripe, resend, utils
+│   ├── store/                     # Zustand UI state
+│   └── types/                     # NextAuth type augmentations
+├── .env.example
+├── package.json
+└── tsconfig.json
 ```
 
 ---
 
 ## 🔑 API Documentation
 
-MetricFlow provides a REST API for programmatic access to your metrics and events.
+MetricFlow provides a public REST API for programmatic access to your events, metrics, and projects.
 
 ### Authentication
 
-API requests require an API key in the `Authorization` header:
+All API requests require an API key passed in the `x-api-key` header:
 ```bash
-Authorization: Bearer YOUR_API_KEY
+x-api-key: YOUR_API_KEY
 ```
+
+Generate API keys from the **API Keys** page in the dashboard.
 
 ### Endpoints
 
-#### Track Events
+#### Track an Event
 ```bash
-POST /api/v1/events
-Content-Type: application/json
-
-{
-  "projectId": "project-id",
-  "name": "purchase",
-  "type": "PURCHASE",
-  "properties": { "item": "subscription" },
-  "revenue": 29.99,
-  "userId_external": "user-123",
-  "country": "US",
-  "device": "desktop",
-  "browser": "Chrome"
-}
+curl -X POST http://localhost:3000/api/v1/events \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "purchase",
+    "type": "PURCHASE",
+    "projectId": "your-project-id",
+    "properties": { "item": "subscription" },
+    "revenue": 29.99,
+    "userId_external": "user-123",
+    "country": "US",
+    "device": "desktop",
+    "browser": "Chrome"
+  }'
 ```
 
-#### Create Metrics
-```bash
-POST /api/v1/metrics
-Content-Type: application/json
+**Event types**: `PAGE_VIEW`, `SIGN_UP`, `PURCHASE`, `CLICK`, `CUSTOM`
 
-{
-  "projectId": "project-id",
-  "name": "Active Users",
-  "value": 1250,
-  "previousValue": 1100,
-  "unit": "users"
-}
+#### List Events
+```bash
+curl "http://localhost:3000/api/v1/events?page=1&limit=50" \
+  -H "x-api-key: YOUR_API_KEY"
 ```
 
-#### Get Project Analytics
+#### Get Metrics
 ```bash
-GET /api/v1/analytics?projectId={id}&startDate={date}&endDate={date}
+curl http://localhost:3000/api/v1/metrics \
+  -H "x-api-key: YOUR_API_KEY"
 ```
 
-For full API documentation, visit `/docs` after starting the development server.
+#### List Projects
+```bash
+curl http://localhost:3000/api/v1/projects \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+For interactive API documentation with example responses, visit `/docs` after starting the development server.
 
 ---
 
-## 🎯 Key Features Explained
+## 🎯 Key Features in Detail
 
 ### Organizations & Projects
-- Create multiple organizations
+- Create multiple organizations, each with its own billing and team
 - Each organization can have multiple projects
-- Projects contain metrics and events
-- Role-based access control per organization
+- Projects contain their own metrics and events
+- Role-based access: **Admin** (full access), **Editor** (read/write), **Viewer** (read-only)
 
-### Metrics Tracking
-- Track numerical metrics over time
-- Compare current vs previous values
-- Visualize trends with charts
-- Export data to CSV/PDF
+### Real-Time Dashboard
+- 4 KPI cards with trend indicators
+- 8 chart types (area, bar, line, pie, etc.) via Recharts
+- SSE endpoint pushes live data every 3 seconds
+- Activity log with pagination
 
 ### Event Tracking
-- Track custom events (page views, sign-ups, purchases, clicks)
-- Attach properties, revenue, and user metadata
-- Filter by date, country, device, browser
-- Real-time event streaming with SSE
+- Track page views, sign-ups, purchases, clicks, and custom events
+- Attach JSON properties, revenue amounts, and user metadata
+- Filter by date range, country, device, browser
+- Export to CSV (up to 10,000 events) or PDF report
 
 ### Subscription Plans
-- **Free**: 1 project, 1,000 events/month, 7-day retention
-- **Pro ($29/mo)**: 10 projects, 100,000 events/month, 90-day retention
-- **Enterprise ($299/mo)**: Unlimited projects, 10M events/month, 2-year retention
+| | Free | Pro ($29/mo) | Enterprise ($99/mo) |
+|---|---|---|---|
+| Projects | 1 | 10 | Unlimited |
+| Events/month | 1,000 | 100,000 | Unlimited |
+| Team members | 1 | 10 | Unlimited |
+| Data retention | 7 days | 1 year | 2 years |
+| API access | — | ✓ | ✓ |
+| CSV/PDF export | — | ✓ | ✓ |
 
 ---
 
@@ -253,47 +268,33 @@ For full API documentation, visit `/docs` after starting the development server.
 ### Available Scripts
 
 ```bash
-# Development
 npm run dev          # Start development server
-
-# Build
 npm run build        # Build for production
 npm run start        # Start production server
-
-# Linting
 npm run lint         # Run ESLint
-
-# Database
-npx prisma studio    # Open Prisma Studio (database GUI)
-npx prisma generate  # Generate Prisma Client
-npx prisma db push   # Push schema changes to database
 ```
 
 ### Database Management
 
-View and edit your database with Prisma Studio:
 ```bash
-npx prisma studio
-```
-
-Create a new migration:
-```bash
-npx prisma migrate dev --name your_migration_name
+npx prisma studio               # Open Prisma Studio (database GUI)
+npx prisma generate              # Generate Prisma Client
+npx prisma db push               # Push schema changes to database
+npx prisma migrate dev --name x  # Create a migration
 ```
 
 ---
 
 ## 🔒 Security
 
-This project includes several security best practices:
-
-- **Next.js 15.2.9**: Patched known CVEs (DoS vulnerabilities, cache poisoning, middleware auth bypass)
-- **Authentication**: Secure session management with NextAuth.js
-- **Password Hashing**: bcryptjs for password encryption
-- **API Keys**: Unique API keys for programmatic access
-- **Input Validation**: Zod schema validation on all forms and API endpoints
-- **SQL Injection Prevention**: Prisma ORM with parameterized queries
-- **CSRF Protection**: Built-in Next.js CSRF protection
+- **Next.js 15.2.9** — Patched known CVEs: HTTP request deserialization DoS, cache poisoning DoS, middleware auth bypass
+- **Authentication** — Secure session management with NextAuth.js (JWT strategy)
+- **Password Hashing** — bcryptjs for credential-based authentication
+- **API Keys** — Unique keys with expiration and last-used tracking
+- **Rate Limiting** — Per-organization API rate limits
+- **Input Validation** — Zod schema validation on all API endpoints and forms
+- **SQL Injection Prevention** — Prisma ORM with parameterized queries
+- **Null Safety** — Defensive coding with optional chaining across all API routes
 
 ---
 
@@ -303,37 +304,16 @@ This project includes several security best practices:
 
 1. Push your code to GitHub
 2. Import your repository on [Vercel](https://vercel.com)
-3. Add environment variables in Vercel dashboard
+3. Add environment variables in the Vercel dashboard
 4. Deploy
-
-### Docker
-
-```bash
-# Build
-docker build -t metricflow .
-
-# Run
-docker run -p 3000:3000 --env-file .env metricflow
-```
 
 ### Manual Deployment
 
-1. Build the application:
-   ```bash
-   npm run build
-   ```
-
-2. Set up PostgreSQL database
-
-3. Run database migrations:
-   ```bash
-   npx prisma migrate deploy
-   ```
-
-4. Start the server:
-   ```bash
-   npm run start
-   ```
+```bash
+npm run build
+npx prisma migrate deploy
+npm run start
+```
 
 ---
 
@@ -349,18 +329,13 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
 ## 🙏 Acknowledgments
 
-- Built with [Next.js](https://nextjs.org/)
-- UI components from [shadcn/ui](https://ui.shadcn.com/)
-- Icons from [Lucide](https://lucide.dev/)
-- Inspired by modern SaaS analytics platforms
+- [Next.js](https://nextjs.org/) — React framework
+- [shadcn/ui](https://ui.shadcn.com/) — UI components
+- [Prisma](https://www.prisma.io/) — Database ORM
+- [Recharts](https://recharts.org/) — Chart library
+- [Lucide](https://lucide.dev/) — Icons
 
 ---
 
